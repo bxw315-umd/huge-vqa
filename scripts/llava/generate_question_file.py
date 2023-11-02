@@ -2,7 +2,7 @@ import jsonlines
 import os
 import glob
 
-image_paths = glob.glob('**/*.jpg', recursive=True)
+image_paths = sorted(glob.glob('**/*.jpg', recursive=True))
 question = 'Offer a thorough analysis of the image.'
 
 def generate_question(image_path, question, question_id):
