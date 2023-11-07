@@ -1,1 +1,3 @@
 llava/questions.jsonl
+.venv
+**/__pycache__

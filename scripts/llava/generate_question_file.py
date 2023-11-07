@@ -14,7 +14,7 @@ def generate_question(image_path, question, question_id):
 
 question_list = [generate_question(image_paths[i], question, i) for i in range(len(image_paths))]
 
-os.makedirs('llava', exist_ok=True)
-with open('llava/questions.jsonl', 'w') as fp:
+os.makedirs('export/llava', exist_ok=True)
+with open('export/llava/questions.jsonl', 'w') as fp:
     with jsonlines.Writer(fp) as writer:
         writer.write_all(question_list)
