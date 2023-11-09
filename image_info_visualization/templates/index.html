@@ -4,7 +4,11 @@
     <title>Index</title>
 </head>
 <body>
-    <img src="{{user_image}}" alt="User Image" style="width: 600px">
-    <p>{{caption}}</p>
+    {% for img, text in data %}
+    <div>
+        <img src="{{img}}" style="width: 600px">
+        <p>{{text}}</p>
+    </div>
+    {% endfor %}
 </body>
 </html>

@@ -1,3 +1,5 @@
+# TODO Q/A pairs in table
+
 import cv2
 import json
 from flask import Flask, make_response, request, render_template
@@ -9,46 +11,35 @@ class ImageInfo:
 
     '''
     {
-        'image': 'image_subset/manual-review/sa_223755.jpg',
-        'caption': 'The image depicts a group of people walking down a sidewalk in a park. Among them, two women are walking past a bench, and one of them is wearing a face mask. The park is surrounded by trees, creating a pleasant and relaxing atmosphere.\n\nThere are several other people in the scene, some of them carrying handbags. A few benches are visible in the park, with one near the center of the image and another further back. The presence of multiple people and the park setting suggest that this could be a popular spot for outdoor activities and socializing.',
-        'bboxs': [
-            {
-                'score': 0.995,
-                'label': 'person',
-                'box': {'xmin': 513.64, 'ymin': 335.29, 'xmax': 867.84, 'ymax': 1463.29}
-            },
-            {
-                'score': 0.998,
-                'label': 'person',
-                'box': {'xmin': 182.44, 'ymin': 424.95, 'xmax': 624.14, 'ymax': 1317.45}
-            },
-        ]
-    }
+        "prompt": "My goal is to create a detailed but accurate set of questions and answers from the image. The purpose is to create an automated VQA dataset. Pretend that you are a human thinking of questions and answers. Make sure some questions require reasoning to answer. For instance, if there is an image of a waitress bringing food to a table, a customer might be pointing at another costumer to indicate that it's their food. Create around 7 Q/A pairs. Provide your Q/A pairs in JSON format.", 
+        "data": {
+            "image_subset\\manual-review\\sa_223753.jpg": "```json\n[\n  {\n    \"question\": \"What type of location is depicted in the image?\",\n    \"answer\": \"The image shows a beach volleyball court.\"\n  },\n  {\n    \"question\": \"What type of trees are visible behind the volleyball court?\",\n    \"answer\": \"There are palm trees visible behind the volleyball court.\"\n  },\n  {\n    \"question\": \"What is the color of the volleyball net?\",\n    \"answer\": \"The volleyball net is blue.\"\n  },\n  {\n    \"question\": \"Is the volleyball court currently in use?\",\n    \"answer\": \"No, the volleyball court is not currently in use as there are no players visible.\"\n  },\n  {\n    \"question\": \"Can you deduce the weather condition in the image?\",\n    \"answer\": \"The weather appears to be sunny as there are shadows on the ground and the sky is clear.\"\n  },\n  {\n    \"question\": \"Are there any buildings in the image?\",\n    \"answer\": \"Yes, there appears to be a building partially visible through the trees in the background.\"\n  },\n  {\n    \"question\": \"Judging by the appearance of the scene, where might this location be?\",\n    \"answer\": \"Given the palm trees and sandy court, this location might be in a tropical or subtropical region.\"\n  }\n]\n```"},
+            ...
+        }
     '''
 
     def __init__(self, image_info_fpath):
         # load answer file
         with open(image_info_fpath, 'r') as fp:
-            self.image_info = json.loads(fp.read())
+            answer_file = json.loads(fp.read())
+        
+        self.prompt = answer_file['prompt']
+        self.image_info = answer_file['data']
     
-    def get_caption(self, image_fpath):
+    def get_text(self, image_fpath):
         if image_fpath not in self.image_info:
-            return None
-        return self.image_info[image_fpath]['caption']
-    
-    def get_bboxs(self, image_fpath):
-        if image_fpath not in self.image_info:
-            return None
-        return self.image_info[image_fpath]['bboxs']
+            return 'Text not found in answers file.'
+        return self.image_info[image_fpath]
 
-image_info = ImageInfo('export/image_info.json')
+image_info = ImageInfo('export/gpt/gpt_captions.json')
 app = Flask(__name__)
 
 @app.route('/')
 def show_index():
-    image_fpath = request.args.get('image_fpath')
-    caption = image_info.get_caption(image_fpath)
-    return render_template("index.html", user_image=f'/image?image_fpath={image_fpath}', caption=caption)
+    image_fpaths = [f'/image?image_fpath={image_fpath}' for image_fpath in image_info.image_info]
+    captions = [image_info.get_text(image_fpath) for image_fpath in image_info.image_info]
+
+    return render_template("index.html", data=zip(image_fpaths, captions))
 
 @app.route('/image', methods=['GET'])
 def image():
