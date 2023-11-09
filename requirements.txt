@@ -4,6 +4,5 @@ jsonlines
 tqdm
 timm
 transformers
-ultralytics
 
-flask
+openai
