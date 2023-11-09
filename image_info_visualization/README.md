@@ -1,0 +1,1 @@
+flask --app image_info_visualization/app.py run --debug

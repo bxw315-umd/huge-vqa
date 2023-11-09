@@ -7,7 +7,7 @@ import os
 
 from tqdm import tqdm
 
-with open('export/questions_1_of_3.jsonl', 'r') as fp:
+with open('export/questions/questions_1_of_37.jsonl', 'r') as fp:
     with jsonlines.Reader(fp) as reader:
         question_dicts = list(reader)
         '''
