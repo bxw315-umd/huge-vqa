@@ -1,3 +1,4 @@
+import json
 import jsonlines
 import os
 
@@ -81,15 +82,14 @@ images = set(bboxs.keys()).intersection(captions.keys())
 if len(bboxs) != len(captions):
     print(f'Warning: bboxs has {len(bboxs)} elements while captions has {len(captions)}. Only the intersection ({len(images)} elements) will be used.')
 
-image_info = [
-    {
-        'image': image,
+image_info = {
+    image: {
         'caption': captions[image],
         'bboxs': bboxs[image],
     } for image in images
-]
+}
 
 os.makedirs('export', exist_ok=True)
-with open('export/image_info.jsonl', 'w') as fp:
-    with jsonlines.Writer(fp) as writer:
-        writer.write_all(image_info)
+image_info_json = json.dumps(image_info)
+with open('export/image_info.json', 'w') as fp:
+    fp.write(image_info_json)
