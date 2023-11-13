@@ -2,7 +2,14 @@
 
 import cv2
 import json
-from flask import Flask, make_response, request, render_template
+import re
+from flask import (
+    Flask, 
+    make_response, 
+    request, 
+    render_template, 
+    abort
+)
 
 class ImageInfo:
     '''
@@ -30,6 +37,16 @@ class ImageInfo:
         if image_fpath not in self.image_info:
             return 'Text not found in answers file.'
         return self.image_info[image_fpath]
+    
+    def get_qa(self, image_fpath):
+        if image_fpath not in self.image_info:
+            return 'Text not found in answers file.'
+        qa_regex = r'''"question": "([\w\s,']+\?)",\n +"answer": "([\w\s,']+\.)"'''
+        caption = self.image_info[image_fpath]
+        match_list = re.findall(qa_regex, caption)
+        print(match_list)
+        # match_list of format ('What is the person wearing a headscarf holding in her hand?', 'She is holding a piece of paper or a card.')
+        return match_list
 
 image_info = ImageInfo('export/gpt/gpt_captions.json')
 app = Flask(__name__)
@@ -38,13 +55,17 @@ app = Flask(__name__)
 def show_index():
     image_fpaths = [f'/image?image_fpath={image_fpath}' for image_fpath in image_info.image_info]
     captions = [image_info.get_text(image_fpath) for image_fpath in image_info.image_info]
+    qa_pairs = [image_info.get_qa(image_fpath) for image_fpath in image_info.image_info]
 
-    return render_template("index.html", data=zip(image_fpaths, captions))
+    return render_template("index.html", data=zip(image_fpaths, captions, qa_pairs))
 
 @app.route('/image', methods=['GET'])
 def image():
-    image_fpath = request.args.get('image_fpath')
+    image_fpath = request.args.get('image_fpath').replace('\\', '/')
     img = cv2.imread(image_fpath)
+
+    if img is None:
+        abort(404)
 
     retval, buffer = cv2.imencode('.png', img)
     response = make_response(buffer.tobytes())
