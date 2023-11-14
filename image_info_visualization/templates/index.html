@@ -4,6 +4,8 @@
     <title>Index</title>
 </head>
 <body>
+    <p>{{prompt}}</p>
+    <hr>
     {% for img, text, qa_list in data %}
     <div>
         <img src="{{img}}" style="width: 600px">
@@ -17,7 +19,7 @@
             {% endfor %}
         </table>
 
-        <!-- <p>{{text}}</p> -->
+        <p>{{text}}</p>
         <hr>
     </div>
     {% endfor %}

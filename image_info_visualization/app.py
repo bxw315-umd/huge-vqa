@@ -32,7 +32,7 @@ class ImageInfo:
         
         self.prompt = answer_file['prompt']
         self.image_info = answer_file['data']
-    
+
     def get_text(self, image_fpath):
         if image_fpath not in self.image_info:
             return 'Text not found in answers file.'
@@ -41,14 +41,14 @@ class ImageInfo:
     def get_qa(self, image_fpath):
         if image_fpath not in self.image_info:
             return 'Text not found in answers file.'
-        qa_regex = r'''"question": "([\w\s,']+\?)",\n +"answer": "([\w\s,']+\.)"'''
+        qa_regex = r'''"question": "([\w\s,'-]+\?)",\n +"answer": "([\w\s,'-]+\.)"'''
         caption = self.image_info[image_fpath]
         match_list = re.findall(qa_regex, caption)
         print(match_list)
         # match_list of format ('What is the person wearing a headscarf holding in her hand?', 'She is holding a piece of paper or a card.')
         return match_list
 
-image_info = ImageInfo('export/gpt/gpt_captions.json')
+image_info = ImageInfo('export/gpt/maxTest.json')
 app = Flask(__name__)
 
 @app.route('/')
@@ -56,8 +56,9 @@ def show_index():
     image_fpaths = [f'/image?image_fpath={image_fpath}' for image_fpath in image_info.image_info]
     captions = [image_info.get_text(image_fpath) for image_fpath in image_info.image_info]
     qa_pairs = [image_info.get_qa(image_fpath) for image_fpath in image_info.image_info]
+    prompt = image_info.prompt
 
-    return render_template("index.html", data=zip(image_fpaths, captions, qa_pairs))
+    return render_template("index.html", data=zip(image_fpaths, captions, qa_pairs), prompt=prompt)
 
 @app.route('/image', methods=['GET'])
 def image():

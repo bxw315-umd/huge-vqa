@@ -2,7 +2,8 @@ glob2
 jsonlines
 
 tqdm
-timm
-transformers
 
 openai
+
+flask
+opencv-python

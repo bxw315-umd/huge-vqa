@@ -5,14 +5,19 @@ Used for GPT as well.
 Splits all images into three different bins
 '''
 
+import argparse
 import jsonlines
 import os
 import glob
 import math
 
+parser = argparse.ArgumentParser()
+parser.add_argument('--questions_per_file', '-q', default=50)
+args = parser.parse_args()
+
 image_paths = sorted(glob.glob('**/*.jpg', recursive=True))
 prompt = '''My goal is to create a detailed but accurate set of questions and answers from the image. The purpose is to create an automated VQA dataset. Pretend that you are a human thinking of questions and answers. Make sure some questions require reasoning to answer. For instance, if there is an image of a waitress bringing food to a table, a customer might be pointing at another costumer to indicate that it's their food. Create around 7 Q/A pairs. Provide your Q/A pairs in JSON format.'''
-questions_per_file = 5
+questions_per_file = int(args.questions_per_file)
 
 def generate_question(image_path, question, question_id):
     return {

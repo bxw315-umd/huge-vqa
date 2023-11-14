@@ -57,7 +57,7 @@ if __name__=="__main__":
                     ],
                 }
             ],
-            max_tokens=300,
+            max_tokens=600,
         )
 
         return response.choices[0].message.content
@@ -71,7 +71,7 @@ if __name__=="__main__":
         }
 
         with open(f'{args.output_file}', 'w') as fp:
-            fp.write(json.dumps(to_save))
+            fp.write(json.dumps(to_save, indent=4))
 
     i=1
     for ipath, url in tqdm(ipath2url.items()):
