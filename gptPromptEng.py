@@ -1,32 +1,19 @@
 from openai import OpenAI
-import jsonlines
-import numpy as np
 import json
 import glob
 import os
 
 from tqdm import tqdm
 
-with open('export/questions/questions_1_of_22.jsonl', 'r') as fp:
-    with jsonlines.Reader(fp) as reader:
-        question_dicts = list(reader)
-        '''
-        [
-            {"image": "image_subset/manual-review/sa_223750.jpg", "text": "Offer a thorough analysis of the image.", "question_id": 0},
-            {"image": "image_subset/manual-review/sa_223751.jpg", "text": "Offer a thorough analysis of the image.", "question_id": 1},
-            ...
-        ]
-        '''
-
-image_paths = [q_dict['image'] for q_dict in question_dicts]
-prompt = question_dicts[0]['text']
-assert (np.array([q_dict['text'] == question_dicts[0]['text'] for q_dict in question_dicts])).all() # all images have the same prompt
-
 # get image urls
+image_paths = sorted(glob.glob('**/*.jpg', recursive=True))
 replace_slashes = lambda img_path: img_path.replace('\\', '/')
 add_base_url = lambda img_path: 'https://raw.githubusercontent.com/bxw315-umd/huge-vqa/main/' + str(img_path)
 ipath2url = {img_path: add_base_url(replace_slashes(img_path)) for img_path in image_paths}
-
+prompt = "My goal is to create a detailed but accurate set of questions and answers from the image. The purpose is to create an automated VQA dataset. \
+    Pretend that you are a human thinking of questions and answers. Make sure some questions require reasoning to answer. For instance, if there is an image of \
+    a waitress bringing food to a table, a customer might be pointing at another costumer to indicate that it's their food. Create around 7 Q/A pairs."
+print(ipath2url['image_subset/manual-review/sa_223750.jpg'])
 client = OpenAI()
 
 def get_gpt_caption(image_url):
@@ -52,18 +39,20 @@ def get_gpt_caption(image_url):
 
     return response.choices[0].message.content
 
+#print(get_gpt_caption(ipath2url['image_subset/manual-review/sa_223750.jpg']))
+
 ipath2caption = dict()
-os.makedirs('export/gpt', exist_ok=True)
-def save_data():
-    to_save = {
-        'prompt': prompt,
-        'data': ipath2caption
-    }
-
-    with open('export/gpt/gpt_captions.json', 'w') as fp:
-        fp.write(json.dumps(to_save))
-
+i=0
 for ipath, url in tqdm(ipath2url.items()):
-    ipath2caption[ipath] = get_gpt_caption(url)
-    save_data()
+    #ipath2caption[ipath] = get_gpt_caption(url)
+    to_save = {
+    'prompt': prompt,
+    'data': ipath2caption
+    }
+    i+=1
 
+
+
+os.makedirs('export/gpt', exist_ok=True)
+with open('export/gpt/gpt_captions.json', 'w') as fp:
+    fp.write(json.dumps(to_save))
