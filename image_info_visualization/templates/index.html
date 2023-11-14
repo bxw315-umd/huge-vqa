@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Index</title>
+</head>
+<body>
+    {% for img, text, qa_list in data %}
+    <div>
+        <img src="{{img}}" style="width: 600px">
+
+        <table>
+            {% for question, answer in qa_list %}
+            <tr>
+                <td>{{question}}</td>
+                <td>{{answer}}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <!-- <p>{{text}}</p> -->
+        <hr>
+    </div>
+    {% endfor %}
+</body>
+</html>
