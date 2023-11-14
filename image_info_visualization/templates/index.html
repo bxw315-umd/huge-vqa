@@ -4,10 +4,21 @@
     <title>Index</title>
 </head>
 <body>
-    {% for img, text in data %}
+    {% for img, text, qa_list in data %}
     <div>
         <img src="{{img}}" style="width: 600px">
-        <p>{{text}}</p>
+
+        <table>
+            {% for question, answer in qa_list %}
+            <tr>
+                <td>{{question}}</td>
+                <td>{{answer}}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <!-- <p>{{text}}</p> -->
+        <hr>
     </div>
     {% endfor %}
 </body>
