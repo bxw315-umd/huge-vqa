@@ -50,12 +50,12 @@ app = Flask(__name__)
 
 @app.route('/')
 def show_index():
-    image_fpaths = [f'/image?image_fpath={image_fpath}' for image_fpath in image_info.image_info]
+    image_links = [f'/image?image_fpath={image_fpath}' for image_fpath in image_info.image_info]
     captions = [image_info.get_text(image_fpath) for image_fpath in image_info.image_info]
     qa_pairs = [image_info.get_qa(image_fpath) for image_fpath in image_info.image_info]
     prompt = image_info.prompt
 
-    return render_template("index.html", data=zip(image_fpaths, captions, qa_pairs), prompt=prompt)
+    return render_template("index.html", data=zip(image_links, captions, qa_pairs), prompt=prompt)
 
 @app.route('/image', methods=['GET'])
 def image():
