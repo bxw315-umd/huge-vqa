@@ -12,11 +12,15 @@ import glob
 import math
 
 parser = argparse.ArgumentParser()
+parser.add_argument('--input_prompt_fpath', '-i', required=True)
+parser.add_argument('--image_root', '-r', default='.')
 parser.add_argument('--questions_per_file', '-q', default=50)
 args = parser.parse_args()
 
-image_paths = sorted(glob.glob('**/*.jpg', recursive=True))
-prompt = '''My goal is to create a detailed but accurate set of questions and answers from the image. The purpose is to create an automated VQA dataset. Pretend that you are a human thinking of questions and answers. Make sure some questions require reasoning to answer. For instance, if there is an image of a waitress bringing food to a table, a customer might be pointing at another costumer to indicate that it's their food. Create around 7 Q/A pairs. Provide your Q/A pairs in JSON format.'''
+with open(args.input_prompt_fpath, 'r') as f:
+    prompt = f.read()
+
+image_paths = sorted(glob.glob(os.path.join(args.image_root, '**/*.jpg'), recursive=True))
 questions_per_file = int(args.questions_per_file)
 
 def generate_question(image_path, question, question_id):

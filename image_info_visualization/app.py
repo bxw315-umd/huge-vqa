@@ -41,14 +41,11 @@ class ImageInfo:
     def get_qa(self, image_fpath):
         if image_fpath not in self.image_info:
             return 'Text not found in answers file.'
-        qa_regex = r'''"question": "([\w\s,'-]+\?)",\n +"answer": "([\w\s,'-]+\.)"'''
-        caption = self.image_info[image_fpath]
-        match_list = re.findall(qa_regex, caption)
-        print(match_list)
+        match_list = [(qa_dict['question'], qa_dict['answer']) for qa_dict in self.image_info[image_fpath]]
         # match_list of format ('What is the person wearing a headscarf holding in her hand?', 'She is holding a piece of paper or a card.')
         return match_list
 
-image_info = ImageInfo('export/gpt/maxTest.json')
+image_info = ImageInfo('export/answers/answers.json')
 app = Flask(__name__)
 
 @app.route('/')

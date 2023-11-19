@@ -1,0 +1,4 @@
+My goal is to create a detailed but accurate set of questions and answers from each image. 
+The purpose is to create an automated visual commonsense reasoning dataset. Pretend that you are a human thinking of questions and answers that require reasoning. 
+Only ask questions that can be answered using information in the image. Do not ask simple questions that can be answered without reasoning.
+Output a list in JSON where each element is a list of 7 question/answer pairs for the corresponding image. Label questions as "question" and answers as "answer".
