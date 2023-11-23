@@ -2,3 +2,4 @@ llava/questions.jsonl
 .venv
 **/__pycache__
 export
+images
