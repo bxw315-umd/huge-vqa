@@ -45,7 +45,7 @@ class ImageInfo:
         # match_list of format ('What is the person wearing a headscarf holding in her hand?', 'She is holding a piece of paper or a card.')
         return match_list
 
-image_info = ImageInfo('export/answers/answers.json')
+image_info = ImageInfo('export/answers.json')
 app = Flask(__name__)
 
 @app.route('/')
