@@ -1,4 +1,5 @@
 from openai import OpenAI
+from multiprocessing import Pool
 from functools import reduce
 from tqdm import tqdm
 import numpy as np
@@ -7,15 +8,20 @@ import json
 import os
 import argparse
 
-# parser = argparse.ArgumentParser()
-# parser.add_argument('--batch_fpath', '-b', required=True)
-# parser.add_argument('--prompt_fpath', '-p', required=True)
-# parser.add_argument('--output_fpath', '-o', required=True)
-# args = parser.parse_args()
+parser = argparse.ArgumentParser()
+parser.add_argument('--batch_fpath', '-b', required=True)
+parser.add_argument('--prompt_fpath', '-p', required=True)
+parser.add_argument('--output_fpath', '-o', required=True)
+parser.add_argument('--debug_dir', '-d')
+args = parser.parse_args()
 
-batch_fpath = 'export/question_batches/batch_1_of_3.json'
-output_fpath = 'export/answer_batches/batch_1_of_3.json'
-prompt_fpath = 'prompts/current.txt'
+batch_fpath = args.batch_fpath
+output_fpath = args.output_fpath
+prompt_fpath = args.prompt_fpath
+debug_dir = args.debug_dir
+
+if debug_dir is None:
+    debug_dir = os.path.dirname(output_fpath)
 
 def encode_image(image_path):
     '''encodes an image into base64'''
@@ -24,7 +30,6 @@ def encode_image(image_path):
 
 def get_gpt_response(image_path_list):
     '''sends the prompt and the list of images to gpt. returns the text response.'''
-    return '```json \n' + json.dumps([{'question': 'Q?', 'answer': 'A.'} for image in image_path_list]) + '   ```'
     response = client.chat.completions.create(
         model="gpt-4-vision-preview",
         messages=[
@@ -61,8 +66,7 @@ with open(prompt_fpath, 'r') as fp:
 
 client = OpenAI()
 
-# start of function
-def run_batch(batch_id):
+def run_image_batch(batch_id):
     '''
     returns a dictionary of image_path -> q/a pairs for a single batch (currently 6 images)
     '''
@@ -71,23 +75,22 @@ def run_batch(batch_id):
     # run batch through gpt
     response_txt = get_gpt_response(batch)
 
-    # save gpt response to file w/ batch_id
-    answer_folder = os.path.dirname(output_fpath)
-    answer_name, answer_ext = os.path.splitext(os.path.basename(output_fpath))
-    os.makedirs(answer_folder, exist_ok=True)
-
     try:
         image_qa_list = json.loads(response_txt[response_txt.index('```json')+len('```json'):response_txt.rindex('```')])
-    except json.JSONDecodeError:
+    except:
         # if parsing fails, output the response text for debugging
-        debug_fpath = os.path.join(answer_folder, f'{answer_name}_batch{batch_id}{answer_ext}')
+        # save gpt response to file w/ batch_id
+        answer_name, answer_ext = os.path.splitext(os.path.basename(output_fpath))
+        os.makedirs(debug_dir, exist_ok=True)
+
+        debug_fpath = os.path.join(debug_dir, f'debug_batch{batch_id}_{answer_name}{answer_ext}')
         with open(debug_fpath, 'w') as fp:
             json.dump({
                 'prompt_fpath': prompt_fpath,
                 'batch_fpath': batch_fpath,
                 'response': response_txt,
-            }, fp)
-        raise json.JSONDecodeError(f"Failed to parse GPT JSON output. Outputted debug information to {debug_fpath}.")
+            }, fp, indent=4)
+        raise ValueError(f"Failed to parse GPT JSON output. Outputted debug information to {debug_fpath}.")
 
     # create image path->qa list dict
     ipath2qa_pairs = dict()
@@ -97,9 +100,27 @@ def run_batch(batch_id):
         ipath2qa_pairs[image_path] = image_qa_pairs
     return ipath2qa_pairs
 
-ipath2qa_pairs = reduce(lambda a, b: a | b, [run_batch(i) for i in tqdm(range(len(image_batches)))])
+def run_batch_safe(batch_id):
+    try:
+        return run_image_batch(batch_id)
+    except Exception as e:
+        print(e)
+        return dict()
+
+# multiprocessing disabled because of tokens per minute rate limit (10,000). in the future, consider exponential backoff
+# with tqdm(total=len(image_batches), miniters=1) as loading_bar:
+#     with Pool() as p:
+#         data_dicts = []
+#         for result in p.imap_unordered(run_batch_safe, range(len(image_batches))):
+#             data_dicts.append(result)
+#             loading_bar.update()
+
+data_dicts = [run_batch_safe(i) for i in tqdm(range(len(image_batches)))]
+
+ipath2qa_pairs = reduce(lambda a, b: a | b, data_dicts)
 
 # save qa pairs
+os.makedirs(os.path.dirname(output_fpath), exist_ok=True)
 with open(output_fpath, 'w') as fp:
     fp.write(json.dumps({
         'prompt': prompt,

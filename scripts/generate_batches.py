@@ -5,7 +5,7 @@ import os
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--image_folder', '-i', required=True, help='Path to the root directory containing .png images.')
-parser.add_argument('--batch_size', '-b', default=80, help='Total number of images within a question batch.')
+parser.add_argument('--batch_size', '-b', default=80, help='Number of batches (and therefore gpt4 requests) within a batch file.')
 args = parser.parse_args()
 
 image_folder = args.image_folder
@@ -14,15 +14,8 @@ batch_size = int(args.batch_size)
 image_paths = sorted(glob.glob(os.path.join(image_folder, '**/*.jpg'), recursive=True))
 questions_per_batch = 6 # hard-coded because of gpt4vision token limit of 4096
 
-n_batches_per_file = batch_size // questions_per_batch
+n_batches_per_file = batch_size
 questions_per_file = questions_per_batch*n_batches_per_file
-
-batches = []
-
-i = 0 # index through image_paths
-while i < len(image_paths):
-    batches += image_paths[i:i+questions_per_file]
-    i += questions_per_file
 
 def generate_batches(image_list):
     '''separate image_list into batches of `questions_per_batch`
