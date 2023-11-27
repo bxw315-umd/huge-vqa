@@ -77,7 +77,7 @@ def run_image_batch(batch_id):
 
     try:
         image_qa_list = json.loads(response_txt[response_txt.index('```json')+len('```json'):response_txt.rindex('```')])
-    except:
+    except Exception as e:
         # if parsing fails, output the response text for debugging
         # save gpt response to file w/ batch_id
         answer_name, answer_ext = os.path.splitext(os.path.basename(output_fpath))
@@ -86,11 +86,13 @@ def run_image_batch(batch_id):
         debug_fpath = os.path.join(debug_dir, f'debug_batch{batch_id}_{answer_name}{answer_ext}')
         with open(debug_fpath, 'w') as fp:
             json.dump({
-                'prompt_fpath': prompt_fpath,
                 'batch_fpath': batch_fpath,
+                'batch_id': batch_id,
+                'error': str(e),
                 'response': response_txt,
             }, fp, indent=4)
-        raise ValueError(f"Failed to parse GPT JSON output. Outputted debug information to {debug_fpath}.")
+        print(f"Failed to parse GPT JSON output. Wrote response to {debug_fpath}.")
+        raise e
 
     # create image path->qa list dict
     ipath2qa_pairs = dict()
