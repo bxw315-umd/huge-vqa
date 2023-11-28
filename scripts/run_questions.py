@@ -6,6 +6,7 @@ import json
 import os
 import argparse
 
+# Function to get command line arguments
 def get_args():
     parser = argparse.ArgumentParser(description='This program takes in a image-prompt file and returns the output of that prompt for each image.')
     parser.add_argument('prompt_file', help='Path to image-prompt file.')
@@ -19,6 +20,8 @@ def encode_image(image_path):
 
 if __name__=="__main__":
     args = get_args()
+
+    # Creates list of dictionaries from the JSON provided.
     with open(f'{args.prompt_file}', 'r') as fp:
         with jsonlines.Reader(fp) as reader:
             question_dicts = list(reader)
@@ -30,6 +33,7 @@ if __name__=="__main__":
             ]
             '''
 
+#seems redundant to have a list of prompts if they all need to be the same anyways
     image_paths = [q_dict['image'] for q_dict in question_dicts]
     prompt = question_dicts[0]['text']
     assert (np.array([q_dict['text'] == question_dicts[0]['text'] for q_dict in question_dicts])).all() # all images have the same prompt
