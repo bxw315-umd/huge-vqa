@@ -1,8 +1,7 @@
-# TODO Q/A pairs in table
-
 import cv2
 import json
 import re
+import argparse
 from flask import (
     Flask, 
     make_response, 
@@ -41,11 +40,13 @@ class ImageInfo:
     def get_qa(self, image_fpath):
         if image_fpath not in self.image_info:
             return 'Text not found in answers file.'
-        match_list = [(qa_dict['question'], qa_dict['answer']) for qa_dict in self.image_info[image_fpath]]
+
+        get_qa = lambda qa_dict: (qa_dict['question'], qa_dict['answer'])
+        rekey_dict = lambda qa_dict: {k.lower(): v for k, v in qa_dict.items()}
+        match_list = [get_qa(rekey_dict(qa_dict)) for qa_dict in self.image_info[image_fpath]]
         # match_list of format ('What is the person wearing a headscarf holding in her hand?', 'She is holding a piece of paper or a card.')
         return match_list
 
-image_info = ImageInfo('export/answers.json')
 app = Flask(__name__)
 
 @app.route('/')
@@ -69,3 +70,11 @@ def image():
     response = make_response(buffer.tobytes())
     response.headers['Content-Type'] = 'image/png'
     return response
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--answers_fpath', '-i', default='export/answers.json', help='File path of answers.json file to visualize.')
+    args = parser.parse_args()
+
+    image_info = ImageInfo(args.answers_fpath)
+    app.run(debug=True)
