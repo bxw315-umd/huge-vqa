@@ -40,7 +40,7 @@ This will output parsed GPT Q/A pairs in export/answer_batches/batch_2_of_3.json
 
 4. Visualize Q/A pairs
 
-```flask --app visualization/app.py run --debug``` needs fixing
+```python visualization/app.py``` - can add -i argument to override the default path to your Q/A pair JSON.
 
 ## Image Dataset
 We have decided to use the [Segment Anything dataset](https://segment-anything.com/dataset/index.html)
@@ -56,3 +56,24 @@ The generic tool we build will be able to take in any folder of image files to g
 Q/A pairs.
 
 ## Examples
+![Halloween Bride](image_subset/prompt_eng/sa_223760.jpg)
+| Question | Answer |
+| -------- | ------ |
+|What is the likely context of the photo with a person dressed in a costume? | Considering the costume and the crowd, it is likely a themed event or celebration such as Halloween or a costume party. |
+|Why might the person be wearing a costume with a ghostly appearance? |	They are probably trying to evoke a spooky or supernatural theme, typical of celebrations like Halloween.|
+|What can we guess about the crowd's engagement with the event?|The crowd appears to be spectators, with some taking photos, suggesting they are engaged and interested in the event or parade.|
+|How can we tell that the location is likely urban?|	The density of the crowd, street barriers, and the style of buildings in the background suggest an urban setting.|
+|Can we infer the time of day the event is taking place?|	The lighting in the image does not indicate natural daylight, and it appears to be nighttime.|
+|What indicates that the event might be a significant or popular occurrence?|	The presence of a large crowd and the effort put into costumes suggest the event is a significant or popular occurrence.|
+|Why might the crowd be standing behind barriers?	|Barriers are often used for crowd control and safety, suggesting an organized event with an expected audience.|
+
+![Stamp](image_subset/prompt_eng/sa_223784.jpg)
+| Question | Answer |
+| -------- | ------ |
+|What does the denomination and text on the stamp tell us about its country of origin?|	The text 'ČESKOSLOVENSKO' indicates that the stamp originated from Czechoslovakia.|
+|What can we infer about the depicted structure's historical period from its architectural style?|	The depicted structure has characteristics of medieval architecture, suggesting it might originate from the Middle Ages.|
+|What might the presence of the castle on a postal stamp imply about its significance?|	The castle's presence on a stamp implies it is of cultural or historical importance to the country.|
+|Based on the design of the stamp, what can be inferred about its age or era of circulation?|	The style and wear suggest it could be a vintage stamp, potentially not in circulation currently.|
+|What kind of correspondence would use a stamp with a denomination of 160 Kčs?|	A stamp with this denomination would most likely be used for domestic or international mailing that requires a higher postage rate, possibly due to weight or size.|
+|Considering the existence of Czechoslovakia, what does this stamp tell us about the timeframe it was printed in?	|Since Czechoslovakia split into the Czech Republic and Slovakia in 1993, the stamp was likely printed before that year.|
+|What does the depiction of the Kokorin castle on the stamp suggest about its status or recognition in the region?|	The depiction implies that Kokorin castle is a recognized landmark with potential historical and touristic significance.|
