@@ -20,11 +20,11 @@
     <h1>Prompt</h1>
     <p>{{prompt}}</p>
     <hr>
-    {% for img, text, qa_list in data %}
+    {% for path, img_link, qa_list in data %}
     <div>
-        <h2>{{img}}</h2>
+        <h2>{{path}}</h2>
 
-        <img src="{{img}}" style="width: 600px">
+        <img src="{{img_link}}" style="width: 600px">
 
         <table border="1">
             {% for question, answer in qa_list %}
@@ -34,8 +34,6 @@
             </tr>
             {% endfor %}
         </table>
-
-        <!-- <p>{{text}}</p> -->
         <hr>
     </div>
     {% endfor %}

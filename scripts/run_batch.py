@@ -131,14 +131,6 @@ def run_batch_safe(batch_id, client, prompt, image_batches, output_fpath, debug_
         print(e)
         return dict()
 
-# multiprocessing disabled because of tokens per minute rate limit (10,000). in the future, consider exponential backoff
-# with tqdm(total=len(image_batches), miniters=1) as loading_bar:
-#     with Pool() as p:
-#         data_dicts = []
-#         for result in p.imap_unordered(run_batch_safe, range(len(image_batches))):
-#             data_dicts.append(result)
-#             loading_bar.update()
-
 def run(image_batches, client, prompt, output_fpath, debug_path, batch_fpath):
     '''Function to run the batch-running functions on each batch in image_batches and then combine them into a large dictionary.
     Returns a dictionary with each image path and their Q/A pairs.'''

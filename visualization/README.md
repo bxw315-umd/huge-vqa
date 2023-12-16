@@ -1,8 +1,1 @@
-flask --app visualization/app.py run --debug
-
-or
-
-(for powershell)
-$env:FLASK_APP=".\visualization\app"
-$env:FLASK_ENV="development"
-python -m flask run
+This folder runs a flask server that displays a webpage showing images alongside their Q/A pairs.
