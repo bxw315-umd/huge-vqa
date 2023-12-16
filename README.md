@@ -6,7 +6,7 @@ to generate a dataset larger than existing datasets, which all require some leve
 Includes:
 - Tool to go from downloaded images -> JSON with question-answer pairs for each question
 - Visualization tool to create human-readable results
-- A demo/starter dataset hosted on [Google Drive] *link here*
+- Demo/starter dataset containing Q/A pairs for a subset of Segment Anything
 
 ## Installation and Setup
 
@@ -48,7 +48,7 @@ created by Meta AI. For prompt engineering, testing, and evaluation we chose 110
 can be found [here](./image_subset). The 10 pictures in the prompt engineering folder were
 ones that we found to be interesting or challenging for models to perceive.
 
-Our demo/starter dataset can be found at [this google drive] *Need Link*. *Talk about dataset briefly
+Our demo/starter dataset can be found at [this google drive](https://drive.google.com/file/d/118Hy0UY2c6GmBxvmxz9BbA5HeS8k9wnL/view?usp=sharing).
 
 *In order to use the results from the dataset you will need to download the first 2 tar files [here](https://scontent-iad3-2.xx.fbcdn.net/m1/v/t6/An8MNcSV8eixKBYJ2kyw6sfPh-J9U4tH2BV7uPzibNa0pu4uHi6fyXdlbADVO4nfvsWpTwR8B0usCARHTz33cBQNrC0kWZsD1MbBWjw.txt?ccb=10-5&oh=00_AfDnBt9Rekikl1latWWVAvKIVv8JbNoXcY__FqIcWaYbTQ&oe=65A314D8&_nc_sid=0fdd51).
 
